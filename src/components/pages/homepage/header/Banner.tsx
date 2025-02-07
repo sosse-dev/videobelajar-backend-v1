@@ -1,7 +1,7 @@
 export default function Banner({ banner1 }: { banner1: string }) {
   return (
     <div className="relative w-full max-w-6xl rounded-lg overflow-hidden mt-[3rem]">
-      {/* Background element */}
+      {/* Background Image for its banner */}
       <div className="absolute inset-0">
         <img
           src={banner1}
@@ -10,7 +10,7 @@ export default function Banner({ banner1 }: { banner1: string }) {
         />
       </div>
 
-      {/* Content container with padding */}
+      {/* Title and Desc */}
       <div className="relative z-10 text-center flex flex-col justify-center items-center py-18 px-3 sm:px-8 md:px-10 lg:px-0">
         <h1 className="text-4xl md:text-5xl max-w-[50rem] font-black text-white mb-6">
           Revolusi Pembelajaran: Temukan Ilmu Baru melalui Platform Video

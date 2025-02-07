@@ -3,7 +3,7 @@ import banner1 from "../../../../assets/banner1.png";
 export default function Newsletter() {
   return (
     <div className="relative w-full max-w-6xl overflow-hidden rounded-lg">
-      {/* Background element */}
+      {/* Background Image */}
       <div className="absolute inset-0 z-[-10]">
         <img
           src={banner1}
@@ -12,6 +12,7 @@ export default function Newsletter() {
         />
       </div>
 
+      {/* Title and Desc */}
       <div className="max-w-2xl mx-auto z-10 py-24 flex flex-col items-center justify-center px-5 sm:px-8 md:px-0">
         <h3 className="text-2xl font-extralight opacity-55 text-white mb-2">
           NEWSLETTER

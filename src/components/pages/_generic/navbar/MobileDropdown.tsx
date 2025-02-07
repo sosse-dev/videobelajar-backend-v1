@@ -1,11 +1,12 @@
 import { Hamburger } from "../../../icons/icons";
 import { useState } from "react";
 import LogoutButton from "./LogoutButton";
+import { Link } from "react-router-dom";
 
 export default function MobileDropdown({
-  isHomepage,
+  showDropdown,
 }: {
-  isHomepage: boolean;
+  showDropdown: boolean;
 }) {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -13,7 +14,7 @@ export default function MobileDropdown({
     <>
       <button
         onClick={() => setIsNavOpen(!isNavOpen)}
-        className={`text-gray-600 ${isHomepage ? "md:hidden" : "hidden"}`}
+        className={`text-gray-600 ${showDropdown ? "md:hidden" : "hidden"}`}
       >
         <Hamburger />
       </button>
@@ -26,9 +27,11 @@ export default function MobileDropdown({
         <button className="text-start py-4 pl-[1rem] border-b border-gray-300 active:bg-gray-50">
           Kategori
         </button>
-        <button className="text-start py-4 pl-[1rem] border-b border-gray-300 active:bg-gray-50">
-          Profil Saya
-        </button>
+        <Link to="/setting/profile">
+          <button className="w-full text-start py-4 pl-[1rem] border-b border-gray-300 active:bg-gray-50">
+            Profil Saya
+          </button>
+        </Link>
         <button className="text-start py-4 pl-[1rem] border-b border-gray-300 active:bg-gray-50">
           Kelas Saya
         </button>

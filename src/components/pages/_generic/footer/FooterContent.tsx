@@ -1,7 +1,8 @@
 import { ChevronRight } from "../../../icons/icons";
 import BottomNavbar from "./BottomNavbar";
+import logo from "../../../../assets/videobelajar-logo.png";
 
-export default function FooterContent({ logo }: { logo: string }) {
+export default function FooterContent() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between gap-8 mb-12">
@@ -38,7 +39,7 @@ export default function FooterContent({ logo }: { logo: string }) {
         <div className="gap-16 hidden md:flex">
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Kategori</h4>
-            <div className="flex flex-col gap-3 text-gray-600">
+            <div className="flex flex-col gap-3 text-gray-500">
               {[
                 "Digital & Teknologi",
                 "Pemasaran",
@@ -55,7 +56,7 @@ export default function FooterContent({ logo }: { logo: string }) {
 
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Perusahaan</h4>
-            <div className="flex flex-col gap-3 text-gray-600">
+            <div className="flex flex-col gap-3 text-gray-500">
               {[
                 "Tentang Kami",
                 "FAQ",
@@ -72,7 +73,7 @@ export default function FooterContent({ logo }: { logo: string }) {
 
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Komunitas</h4>
-            <div className="flex flex-col gap-3 text-gray-600">
+            <div className="flex flex-col gap-3 text-gray-500">
               {["Tips Sukses", "Blog"].map((item) => (
                 <a key={item} href="#" className="hover:text-[#3ECF4C]">
                   {item}
