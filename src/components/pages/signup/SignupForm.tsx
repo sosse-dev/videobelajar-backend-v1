@@ -1,3 +1,4 @@
+import useUserHandler from "@/hooks/api/use-user-handler";
 import GoogleButton from "../_generic/form/GoogleButton";
 import DividerForm from "../_generic/form/DividerForm";
 import HeaderForm from "../_generic/form/HeaderForm";
@@ -10,8 +11,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { IndonesianFlag, X } from "../../icons/icons";
+import { ChevronDown, EyeIcon, EyeOffIcon } from "lucide-react";
+import { IndonesianFlag } from "../../icons/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { signupSchema } from "@/schema/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +23,10 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { user } from "@/type/types";
 import { z } from "zod";
+import useNetworkStatus from "@/hooks/use-network-status";
 
 export default function SignupForm() {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -39,38 +42,52 @@ export default function SignupForm() {
     password: false,
     confirmPassword: false,
   });
+  const { createUserHandler, fetchAllUsers } = useUserHandler();
+  const { isOnline } = useNetworkStatus();
   const navigate = useNavigate();
 
   const onSubmit = async (values: z.infer<typeof signupSchema>) => {
-    const getUsers = localStorage.getItem("users"); // Ambil users[]
+    setLoading(true);
 
-    let users: user[] = []; // Buat let users[]
-
-    if (getUsers) {
-      users = JSON.parse(getUsers); // jika ada, masukan users[] dari localStorage ke users[] let diatas
-    }
-
-    const isUserExists = users.some((user) => user.email === values.email); // mengecek jika email input dari form sudah ada di localstorage atau tidak
-
-    if (isUserExists) {
-      toast.error("Email sudah terdaftar");
+    if (!isOnline) {
+      toast.error("Terjadi kesalahan, apakah anda sedang offline?");
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(values.password, 10); // ubah password dengan bcrypt
+    try {
+      // Fetch semua user
+      const users = await fetchAllUsers();
 
-    users.push({
-      name: values.name,
-      email: values.email,
-      countryCode: values.countryCode,
-      phoneNumber: values.phoneNumber,
-      password: hashedPassword,
-    }); // array let users[] ditambahkan
+      // Cek apakah email sudah dipakai user lain atau belum
+      const isUserExists = users?.some(
+        (user: user) => user.email === values.email
+      );
 
-    localStorage.setItem("users", JSON.stringify(users)); // kemudian dimasukan ke users[] ke local storage
+      if (isUserExists) {
+        toast.error("Email sudah terdaftar");
+        return;
+      }
 
-    toast.success("Pendaftaran berhasil");
-    navigate("/login"); // user dipindahkan ke login setelah membuat akun
+      const hashedPassword = await bcrypt.hash(values.password, 10); // Ubah sandi dengan bcrypt
+
+      const newUser: user = {
+        name: values.name,
+        email: values.email,
+        countryCode: values.countryCode,
+        phoneNumber: values.phoneNumber,
+        password: hashedPassword,
+      };
+
+      // Buat akun baru dengan API
+      await createUserHandler(newUser);
+
+      toast.success("Pendaftaran berhasil");
+      navigate("/login");
+    } catch {
+      return;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -142,7 +159,7 @@ export default function SignupForm() {
                     <IndonesianFlag />
                     <div className="flex items-center justify-between px-1.5 text-sm cursor-pointer">
                       <span className="mx-2">+62</span>
-                      <X />
+                      <ChevronDown className="text-gray-600" />
                     </div>
                   </div>
                 </div>
@@ -259,6 +276,7 @@ export default function SignupForm() {
         <div className="space-y-3.5 mt-5">
           <Button
             type="submit"
+            disabled={loading}
             className="w-full font-bold dark:bg-green-500 dark:text-white dark:hover:bg-green-600"
           >
             Daftar
@@ -266,6 +284,7 @@ export default function SignupForm() {
           <Link to="/login">
             <Button
               variant="outline"
+              type="button"
               className="w-full font-bold dark:bg-green-50 text-green-600 dark:hover:text-green-700 border-0 dark:hover:bg-green-100"
             >
               Masuk

@@ -4,6 +4,9 @@ import defaultProfilPicture from "../../../../assets/avatar.png";
 import MobileDropdown from "./MobileDropdown";
 import Dropdown from "./Dropdown";
 import logo from "../../../../assets/videobelajar-logo.png";
+import { useEffect, useState } from "react";
+import { useCounter } from "@/stores/useCounter";
+import { toast } from "sonner";
 
 export default function Navbar({
   avatar,
@@ -13,6 +16,18 @@ export default function Navbar({
   showDropdown: boolean;
 }) {
   const user = useAuth();
+  const { count } = useCounter();
+  const [cachedCount, setCachedCount] = useState(0);
+
+  useEffect(() => {
+    // Ketika link profil saya di klik dari MobileDropdown, maka ini akan ke trigger meski tidak ada yang di increment, makanya di buat seperti ini
+    if (count !== cachedCount) {
+      toast.error(`Halaman belum tersedia X${count}`);
+    }
+
+    setCachedCount(cachedCount);
+  }, [count]);
+
   return (
     <nav className="w-full max-w-6xl relative left-0 right-0 inset-0 m-auto flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white shadow-lg md:shadow-none">
       {/* Videobelajar logo */}
@@ -23,7 +38,7 @@ export default function Navbar({
       {/* Navbar Mobile */}
       <MobileDropdown showDropdown={showDropdown} />
 
-      {/* Navbar Tablet and Desktop */}
+      {/* Na vbar Tablet and Desktop */}
       <div
         className={`items-center gap-9 ${
           showDropdown ? "hidden md:flex" : "hidden"

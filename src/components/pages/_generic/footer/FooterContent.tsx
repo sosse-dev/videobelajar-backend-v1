@@ -1,6 +1,6 @@
-import { ChevronRight } from "../../../icons/icons";
 import BottomNavbar from "./BottomNavbar";
 import logo from "../../../../assets/videobelajar-logo.png";
+import { ChevronRight } from "lucide-react";
 
 export default function FooterContent() {
   return (
@@ -21,17 +21,17 @@ export default function FooterContent() {
         <div className="flex flex-col w-full h-fit md:hidden">
           <button className="flex justify-between w-full h-fit cursor-pointer">
             <span className="text-lg font-medium">Kategori</span>
-            <ChevronRight />
+           <ChevronRight />
           </button>
 
           <button className="flex justify-between w-full h-fit cursor-pointer">
             <span className="text-lg font-medium">Perusahaan</span>
-            <ChevronRight />
+           <ChevronRight />
           </button>
 
           <button className="flex justify-between w-full h-fit cursor-pointer">
             <span className="text-lg font-medium">Komunitas</span>
-            <ChevronRight />
+           <ChevronRight />
           </button>
         </div>
 

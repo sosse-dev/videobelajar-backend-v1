@@ -1,4 +1,5 @@
 import DeleteUserButton from "./DeleteUserButton";
+import useUserHandler from "@/hooks/api/use-user-handler";
 import LogoutButton from "./LogoutButton";
 import {
   Select,
@@ -18,15 +19,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { editProfileSchema } from "@/schema/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { user } from "@/type/types";
 import { z } from "zod";
+import useNetworkStatus from "@/hooks/use-network-status";
 
 export default function ProfileForm({ user }: { user: user | undefined }) {
-  const session = useAuth();
-  const navigate = useNavigate();
   const form = useForm<z.infer<typeof editProfileSchema>>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
@@ -36,44 +37,78 @@ export default function ProfileForm({ user }: { user: user | undefined }) {
       phoneNumber: "",
     },
   });
+  const { fetchAllUsers, updateUser: updateUserById } = useUserHandler(); // Custom Hook API functions
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { isOnline } = useNetworkStatus();
+  const session = useAuth();
 
   const onSubmit: SubmitHandler<z.infer<typeof editProfileSchema>> = async (
     values
   ) => {
-    const getUsers = localStorage.getItem("users");
+    setLoading(true);
 
-    let users: user[] = [];
-
-    if (getUsers) {
-      users = JSON.parse(getUsers);
-    }
-
-    const userIndex = users.findIndex(
-      (user) =>
-        user.email === session?.email && user.password === session?.password
-    );
-
-    if (userIndex === -1) {
-      toast.error("Pengguna tidak ada");
+    if (!isOnline) {
+      toast.error("Terjadi kesalahan, apakah anda sedang offline?");
       return;
     }
 
-    // Update the matched user's information
-    users[userIndex] = {
-      ...users[userIndex],
-      name: values.name,
-      email: values.email,
-      countryCode: values.countryCode,
-      phoneNumber: values.phoneNumber,
-    }; // user diambil sesuai indeksnya, kemudian beberapa value diperbarui sesuai input dari form
+    try {
+      // Ambil semua pengguna dari API
+      const users = await fetchAllUsers();
 
-    const editedUser = users[userIndex];
+      if (!users) {
+        toast.error("Tidak ada pengguna yang ditemukan");
+        return;
+      }
 
-    localStorage.setItem("loggedInUser", JSON.stringify(editedUser)); // ubah di loggedInUser
-    localStorage.setItem("users", JSON.stringify(users)); // update juga localstorage
+      if (!session) {
+        toast.error("Sesi pengguna tidak ada");
+        return;
+      }
 
-    navigate(0); // untuk refresh halaman
-    toast.success("Pengguna berhasil diperbarui");
+      // Cek apakah email sudah dipakai user lain atau belum
+      const isUserExists = users?.some(
+        (user: user) => user.email === values.email
+      );
+
+      if (isUserExists) {
+        toast.error("Email sudah terdaftar");
+        return;
+      }
+
+      const userIndex = users?.findIndex(
+        (user) =>
+          user.email === session.email && user.password === session.password
+      ); // Cari pengguna berdasarkan sesi
+
+      if (userIndex === -1) {
+        toast.error("Pengguna tidak ada");
+        return;
+      }
+
+      const userToUpdate = users[userIndex];
+
+      // Update informasi pengguna berdasarkan input form
+      const updatedUser = {
+        ...userToUpdate,
+        name: values.name,
+        email: values.email,
+        countryCode: values.countryCode,
+        phoneNumber: values.phoneNumber,
+      };
+
+      await updateUserById(userToUpdate.id, updatedUser); // Kirim update ke API
+
+      localStorage.setItem("loggedInUser", JSON.stringify(updatedUser)); // Perbarui localStorage loggedInUser
+
+      navigate(0); // Refresh halaman
+      toast.success("Pengguna berhasil diperbarui");
+    } catch {
+      return;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -165,6 +200,7 @@ export default function ProfileForm({ user }: { user: user | undefined }) {
 
             <button
               type="submit"
+              disabled={loading}
               className="bg-[#3ecf4c] text-white font-bold py-2 px-7 rounded-lg w-full md:w-auto cursor-pointer hover:opacity-80"
             >
               Simpan

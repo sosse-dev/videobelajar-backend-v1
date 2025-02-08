@@ -1,7 +1,7 @@
-import { Hamburger } from "../../../icons/icons";
-import { useState } from "react";
 import LogoutButton from "./LogoutButton";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Menu } from "lucide-react";
 
 export default function MobileDropdown({
   showDropdown,
@@ -16,7 +16,7 @@ export default function MobileDropdown({
         onClick={() => setIsNavOpen(!isNavOpen)}
         className={`text-gray-600 ${showDropdown ? "md:hidden" : "hidden"}`}
       >
-        <Hamburger />
+       <Menu />
       </button>
 
       <div

@@ -13,7 +13,7 @@ export default function ProtectedRoute({
   useEffect(() => {
     if (!loggedInUser) {
       toast.error("Anda belum masuk akun")
-      navigate("/"); // Redirect user to homepage if user is not logged in
+      navigate("/signup"); // Redirect user to homepage if user is not logged in
     }
   }, [loggedInUser, navigate]);
 

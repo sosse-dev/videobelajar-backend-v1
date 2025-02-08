@@ -1,4 +1,7 @@
+import { useCounter } from "@/stores/useCounter";
+
 export default function Banner({ banner1 }: { banner1: string }) {
+  const { inc } = useCounter();
   return (
     <div className="relative w-full max-w-6xl rounded-lg overflow-hidden mt-[3rem]">
       {/* Background Image for its banner */}
@@ -22,7 +25,10 @@ export default function Banner({ banner1 }: { banner1: string }) {
           berpartisipasi dalam latihan interaktif yang akan meningkatkan
           pemahaman Anda.
         </p>
-        <button className="w-fit bg-[#3ECF4C] text-white py-3 px-2 md:px-8 rounded-lg font-bold hover:bg-[#2e9f3a] cursor-pointer transition">
+        <button
+          onClick={inc}
+          className="w-fit bg-[#3ECF4C] text-white py-3 px-2 md:px-8 rounded-lg font-bold hover:bg-[#2e9f3a] cursor-pointer transition"
+        >
           Temukan Video Course untuk Dipelajari!
         </button>
       </div>

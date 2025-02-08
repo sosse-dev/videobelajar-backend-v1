@@ -1,5 +1,6 @@
-import DividerForm from "../_generic/form/DividerForm";
+import useUserHandler from "@/hooks/api/use-user-handler";
 import GoogleButton from "../_generic/form/GoogleButton";
+import DividerForm from "../_generic/form/DividerForm";
 import HeaderForm from "../_generic/form/HeaderForm";
 import bcrypt from "bcryptjs";
 import {
@@ -18,9 +19,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { user } from "@/type/types";
 import { toast } from "sonner";
 import { z } from "zod";
+import useNetworkStatus from "@/hooks/use-network-status";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -31,37 +32,52 @@ export default function LoginForm() {
     },
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { fetchAllUsers } = useUserHandler();
+  const { isOnline } = useNetworkStatus();
   const navigate = useNavigate();
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    const getUsers = localStorage.getItem("users"); // mengambil users[] di local storage
+    setLoading(true);
 
-    if (!getUsers) {
-      toast.error("Email atau kata sandi anda salah");
+    if (!isOnline) {
+      toast.error("Terjadi kesalahan, apakah anda sedang offline?");
       return;
     }
 
-    const users: user[] = JSON.parse(getUsers); // masukan users[] dari localstorage ke const users[]
-    const user = users.find((user) => user.email === values.email); // mengecek input email dari form jika ada di localstorage
+    try {
+      // Fetch users dari API
+      const users = await fetchAllUsers();
 
-    if (!user) {
-      toast.error("Email atau kata sandi anda salah");
+      // Cek apa user ada atau tidak
+      const user = users?.find((user) => user.email === values.email);
+
+      if (!user) {
+        toast.error("Email atau kata sandi anda salah");
+        return;
+      }
+
+      // Validasi sandi
+      const isPasswordValid = await bcrypt.compare(
+        values.password,
+        user.password
+      );
+
+      if (!isPasswordValid) {
+        toast.error("Email atau kata sandi anda salah");
+        return;
+      }
+
+      // Masukan user yang login ke localStorage
+      localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+      toast.success("Login berhasil");
+      navigate("/");
+    } catch {
       return;
+    } finally {
+      setLoading(false);
     }
-
-    const isPasswordValid = await bcrypt.compare(
-      values.password,
-      user.password
-    ); // kemudian password di kondfirmasi dengan bcrypt
-
-    if (!isPasswordValid) {
-      toast.error("Email atau kata sandi anda salah");
-      return;
-    }
-
-    localStorage.setItem("loggedInUser", JSON.stringify(user)); // jika semua telah dilewati, maka loggedInUser dibuat dan dimasukan value user yang sesuai
-    toast.success("Login berhasil");
-    navigate("/"); // user dipindahkan ke halaman utama setelah login
   };
 
   return (
@@ -145,6 +161,7 @@ export default function LoginForm() {
         <div className="space-y-3.5 mt-5">
           <Button
             type="submit"
+            disabled={loading}
             className="w-full font-bold dark:bg-green-500 dark:text-white dark:hover:bg-green-600"
           >
             Masuk
@@ -152,6 +169,7 @@ export default function LoginForm() {
           <Link to="/signup">
             <Button
               variant="outline"
+              type="button"
               className="w-full font-bold dark:bg-green-50 text-green-600 dark:hover:text-green-700 border-0 dark:hover:bg-green-100"
             >
               Daftar

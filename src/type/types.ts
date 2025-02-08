@@ -29,3 +29,19 @@ export type user = {
   phoneNumber: string;
   password: string;
 };
+
+export type userWithId = {
+  id: string;
+  name: string;
+  email: string;
+  countryCode: "+62" | "+1" | "+44" | "+91" | "+81";
+  phoneNumber: string;
+  password: string;
+};
+
+export type userWihtoutPassword = {
+  name: string;
+  email: string;
+  countryCode: "+62" | "+1" | "+44" | "+91" | "+81";
+  phoneNumber: string;
+};
