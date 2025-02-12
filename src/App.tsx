@@ -39,7 +39,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/users-list"
+          path="/userslist"
           element={
             <ProtectedRoute>
               <Users />
