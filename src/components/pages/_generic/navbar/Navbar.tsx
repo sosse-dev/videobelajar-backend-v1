@@ -45,11 +45,13 @@ export default function Navbar({
       >
         <Dropdown />
         {user?.email && user.name ? (
-          <img
-            src={avatar || defaultProfilPicture}
-            className="w-11 h-11 rounded-lg"
-            alt="Avatar"
-          />
+          <Link to="/users-list">
+            <img
+              src={avatar || defaultProfilPicture}
+              className="w-11 h-11 rounded-lg"
+              alt="Avatar"
+            />
+          </Link>
         ) : (
           // For non-logged-in user
           <div className="flex gap-x-3">
