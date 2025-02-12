@@ -1,4 +1,4 @@
-import { useCounter } from "@/stores/useCounter";
+import { useCounter } from "@/stores/zustand";
 
 export default function Banner({ banner1 }: { banner1: string }) {
   const { inc } = useCounter();

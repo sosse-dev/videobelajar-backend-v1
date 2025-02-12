@@ -7,6 +7,7 @@ import ProfileSetting from "./pages/setting/ProfileSetting";
 import ProtectedRoute from "./components/pages/_generic/container/protector/ProtectedRoute";
 import ProtectedLoginSignupRoute from "./components/pages/_generic/container/protector/ProtectedLoginSignup";
 import { Toaster } from "sonner";
+import Users from "./pages/Users";
 
 const App: React.FC = () => {
   return (
@@ -34,6 +35,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <ProfileSetting />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users-list"
+          element={
+            <ProtectedRoute>
+              <Users />
             </ProtectedRoute>
           }
         />

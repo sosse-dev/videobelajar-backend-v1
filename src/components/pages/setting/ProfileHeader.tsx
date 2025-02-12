@@ -1,5 +1,5 @@
-import { user } from "@/type/types";
 import avatar from "../../../assets/avatar.png";
+import { user } from "@/type/types";
 
 export default function ProfileHeader({ user }: { user: user | undefined }) {
   return (

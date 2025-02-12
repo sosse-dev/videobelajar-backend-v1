@@ -5,8 +5,9 @@ import MobileDropdown from "./MobileDropdown";
 import Dropdown from "./Dropdown";
 import logo from "../../../../assets/videobelajar-logo.png";
 import { useEffect, useState } from "react";
-import { useCounter } from "@/stores/useCounter";
 import { toast } from "sonner";
+import { useCounter } from "@/stores/zustand";
+import { VideoBelajarLogo } from "@/components/icons/icons";
 
 export default function Navbar({
   avatar,
@@ -31,9 +32,7 @@ export default function Navbar({
   return (
     <nav className="w-full max-w-6xl relative left-0 right-0 inset-0 m-auto flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-white shadow-lg md:shadow-none">
       {/* Videobelajar logo */}
-      <Link to="/" className="w-[237px] h-[56px]">
-        <img src={logo} className="h-[40px] mt-3 ml-0" alt="Logo" />
-      </Link>
+      <VideoBelajarLogo logo={logo} />
 
       {/* Navbar Mobile */}
       <MobileDropdown showDropdown={showDropdown} />

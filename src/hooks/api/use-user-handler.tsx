@@ -9,12 +9,15 @@ import {
   updateUserById,
 } from "@/services/api/users";
 import { toast } from "sonner";
+import { usersState } from "@/stores/zustand";
 
 const useUserHandler = () => {
+  const { addUsers } = usersState();
   const fetchAllUsers = useCallback(async () => {
     try {
       const allUsers = await getAllUsers();
 
+      addUsers(allUsers);
       return allUsers;
     } catch (error) {
       handleApiError(error, "Terjadi kesalahan");
